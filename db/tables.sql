@@ -1,4 +1,10 @@
 
+-- Client based commands to execute when importing data:
+--
+-- \SET ON_ERROR_STOP ON
+-- \SET client_min_messages TO NOTICE
+--
+
 -- ----------------------------------------------------------------------------------------------------------
 -- START:[DROPS]
 
