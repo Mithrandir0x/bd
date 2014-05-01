@@ -71,8 +71,6 @@ def vendors_sql():
                 '"DNI", '
                 '"NOM", '
                 '"TELEFON", '
-                '"NOM_SISTEMA", '
-                '"CONTRASENYA", '
                 '"GENERE", '
                 '"PAIS", '
                 '"ENTRADES_VENUDES"'
@@ -80,8 +78,6 @@ def vendors_sql():
                 "'%s',"
                 "'%s',"
                 "'%s',"
-                "NULL,"
-                "NULL,"
                 "'%s',"
                 "'%s',"
                 "'%s'"
