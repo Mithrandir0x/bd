@@ -6,6 +6,7 @@ hotels_map = {}
 players_map = {}
 referees_map = {}
 games_chambers_map = {}
+sales_chambers_map = {}
 
 def countries_sql():
     insert_query_1 = 'INSERT INTO "PAIS" ("NOM") VALUES (\'%s\');'
@@ -47,8 +48,8 @@ def hotels_sql():
         "Venecia;Hotel Antemare;10;1.9,1.10,1.11,1.12,1.13,1.14,1.15,1.16;10",
         "Victòria;Hotel Montserrat;20;2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8;18",
         "Victòria;Hotel Calipolis;15;3.1,3.2,3.3,3.4;8",
-        "Ducci;Hotel Montserrat;12;4.1,4.2;",
-        "Artemisa;Hotel Montserrat;30;5.1;" )
+        "Ducci;Hotel Montserrat;12;4.1,4.2;0",
+        "Artemisa;Hotel Montserrat;30;5.1;0" )
 
     for i, name in enumerate(hotels, 1):
         print insert_query_1 % ( name )
@@ -62,7 +63,11 @@ def hotels_sql():
         hotel_fk = hotels_map[data[1]]
         capacity = data[2]
         print insert_query_2 % ( hotel_fk, name, capacity )
-        for gameday in data[3].split(','):
+        for i, gameday in enumerate(data[3].split(',')):
+            if i == 0:
+                sales_chambers_map[gameday] = data[4]
+            else:
+                sales_chambers_map[gameday] = 0
             games_chambers_map[gameday] = ( hotel_fk, name )
 
 def vendors_sql():
@@ -270,7 +275,7 @@ def games_sql():
         "2.2;Viswanathan Anand; Topalov;Roberto Mandini",
         "2.3;Charles Stanley;Wilhelm Steinitz;Roberto Mandini",
         "2.4;S. Lipschütz;Boris Gelfand;Roberto Mandini",
-        "2.5;Fabiano Caruana;Étienne Bacrot;Benjumea Azlatiletamendi",
+        "2.5;Fabiano Caruana;Étienne Bacrot;Pérez Lucián",
         "2.6;Levon Aronian;Shakhriyar Mamedyarov;Illiech Vladimir",
         "2.7;Larry Christiansen;Anish Girl;Pérez Lucián",
         "2.8;Emanuel Lasker;Judit Polgar;Pérez Lucián",
@@ -290,7 +295,8 @@ def games_sql():
         referee_fk = referees_map[data[3].strip()]
         hotel_fk = games_chambers_map[gameday][0]
         chamber_fk = games_chambers_map[gameday][1]
-        print insert_query_1 % ( i, referee_fk, white_fk, black_fk, gameday_fk, hotel_fk, chamber_fk, 0 )
+        sales = sales_chambers_map[gameday]
+        print insert_query_1 % ( i, referee_fk, white_fk, black_fk, gameday_fk, hotel_fk, chamber_fk, sales )
         # try:
         #     with open('./moves/' + gameday + '.txt') as file:
         #         moves = file.readlines()
@@ -301,7 +307,7 @@ def games_sql():
         #     # print 'File not found "%s.txt"' % gameday
         #     pass
 
-if __name__ == '__main__':
+def all_insert_sql():
     countries_sql()
     print
     hotels_sql()
@@ -316,3 +322,6 @@ if __name__ == '__main__':
     print
     games_sql()
     print
+
+if __name__ == '__main__':
+    all_insert_sql()

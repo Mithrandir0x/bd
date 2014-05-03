@@ -1,3 +1,316 @@
+
+DROP TABLE IF EXISTS "MOVIMENT";
+DROP TABLE IF EXISTS "PARTIDA";
+DROP TABLE IF EXISTS "JUTGE";
+DROP TABLE IF EXISTS "JUGADOR";
+DROP TABLE IF EXISTS "TAQUILLER";
+DROP TABLE IF EXISTS "JORNADA";
+DROP TABLE IF EXISTS "SALA";
+DROP TABLE IF EXISTS "HOTEL";
+DROP TABLE IF EXISTS "PAIS";
+
+-- -----------------------------------------------------
+-- "PAIS"
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS "PAIS" (
+  "NOM" VARCHAR(32) NOT NULL,
+  PRIMARY KEY ("NOM")
+);
+
+-- -----------------------------------------------------
+-- "HOTEL"
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS "HOTEL" (
+  "NOM" VARCHAR(45) NULL,
+  PRIMARY KEY ("NOM")
+);
+
+-- -----------------------------------------------------
+-- "SALA"
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS "SALA" (
+  "HOTEL" VARCHAR(45) NOT NULL,
+  "NOM" VARCHAR(45) NULL,
+  "AFORAMENT" INTEGER DEFAULT 0,
+  PRIMARY KEY ("HOTEL", "NOM"),
+  FOREIGN KEY ("HOTEL") REFERENCES "HOTEL" ("NOM")
+);
+
+-- -----------------------------------------------------
+-- "JORNADA"
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS "JORNADA" (
+  "ID" INTEGER NOT NULL,
+  "ORDRE" INTEGER NULL,
+  "DATA_REALITZACIO" TIMESTAMP NULL,
+  PRIMARY KEY ("ID")
+);
+
+--   "GENERE" DOMAIN {'Sr.', 'Sra.'}
+
+-- -----------------------------------------------------
+-- "TAQUILLER"
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS "TAQUILLER" (
+  "DNI" VARCHAR(16) NOT NULL,
+  "NOM" VARCHAR(32) NOT NULL,
+  "TELEFON" VARCHAR(32) NULL,
+  "GENERE" VARCHAR(4) NOT NULL,
+  "ENTRADES_VENUDES" INTEGER DEFAULT 0,
+  "PAIS" VARCHAR(32) NOT NULL,
+  PRIMARY KEY ("DNI"),
+  FOREIGN KEY ("PAIS") REFERENCES "PAIS" ("NOM")
+);
+
+-- -----------------------------------------------------
+-- "JUGADOR"
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS "JUGADOR" (
+  "DNI" VARCHAR(16) NOT NULL,
+  "NOM" VARCHAR(32) NOT NULL,
+  "TELEFON" VARCHAR(32) NULL,
+  "GENERE" VARCHAR(4) NOT NULL,
+  "PARTIDES_GUANYADES" INTEGER DEFAULT 0,
+  "PARTIDES_PERDUDES" INTEGER DEFAULT 0,
+  "HOTEL" VARCHAR(45) NULL,
+  "PAIS" VARCHAR(32) NOT NULL,
+  PRIMARY KEY ("DNI"),
+  FOREIGN KEY ("HOTEL") REFERENCES "HOTEL" ("NOM"),
+  FOREIGN KEY ("PAIS") REFERENCES "PAIS" ("NOM")
+);
+
+-- -----------------------------------------------------
+-- "JUTGE"
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS "JUTGE" (
+  "DNI" VARCHAR(16) NOT NULL,
+  "NOM" VARCHAR(32) NOT NULL,
+  "TELEFON" VARCHAR(32) NULL,
+  "GENERE" VARCHAR(4) NOT NULL,
+  "VICTORIES_BLANQUES" INTEGER DEFAULT 0,
+  "VICTORIES_NEGRES" INTEGER DEFAULT 0,
+  "TAULES" INTEGER DEFAULT 0,
+  "HOTEL" VARCHAR(45) NULL,
+  "PAIS" VARCHAR(32) NOT NULL,
+  PRIMARY KEY ("DNI"),
+  FOREIGN KEY ("HOTEL") REFERENCES "HOTEL" ("NOM"),
+  FOREIGN KEY ("PAIS") REFERENCES "PAIS" ("NOM")
+);
+
+-- -----------------------------------------------------
+-- "PARTIDA"
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS "PARTIDA" (
+  "ID" INTEGER NOT NULL,
+  "GUANYADOR" VARCHAR(1) NULL,
+  "JUTGE" VARCHAR(16) NOT NULL,
+  "BLANQUES" VARCHAR(16) NOT NULL,
+  "NEGRES" VARCHAR(16) NOT NULL,
+  "JORNADA" INTEGER NOT NULL,
+  "HOTEL" VARCHAR(45) NOT NULL,
+  "SALA" VARCHAR(45) NOT NULL,
+  "ENTRADES_VENUDES" INTEGER DEFAULT 0,
+  PRIMARY KEY ("ID"),
+  FOREIGN KEY ("JUTGE") REFERENCES "JUTGE" ("DNI"),
+  FOREIGN KEY ("BLANQUES") REFERENCES "JUGADOR" ("DNI"),
+  FOREIGN KEY ("NEGRES") REFERENCES "JUGADOR" ("DNI"),
+  FOREIGN KEY ("JORNADA") REFERENCES "JORNADA" ("ID"),
+  FOREIGN KEY ("HOTEL", "SALA") REFERENCES "SALA" ("HOTEL", "NOM"),
+  CONSTRAINT "JUGADORS_DIFERENTS" CHECK ( "BLANQUES" != "NEGRES" )
+);
+
+-- -----------------------------------------------------
+-- "MOVIMENT"
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS "MOVIMENT" (
+  "PARTIDA" INTEGER NOT NULL,
+  "ORDRE" INTEGER NOT NULL,
+  "DESCRIPCIO" VARCHAR(64) NOT NULL,
+  FOREIGN KEY ("PARTIDA") REFERENCES "PARTIDA" ("ID")
+);
+
+-- -----------------------------------------------------
+-- ENTRADES_DISPONIBLES
+-- -----------------------------------------------------
+DROP FUNCTION IF EXISTS ENTRADES_DISPONIBLES(VARCHAR, VARCHAR, INTEGER);
+CREATE OR REPLACE FUNCTION ENTRADES_DISPONIBLES(VARCHAR, VARCHAR, INTEGER) RETURNS INTEGER AS $$
+DECLARE
+    hotel ALIAS FOR $1;
+    sala ALIAS FOR $2;
+    jornada ALIAS FOR $3;
+    entrades_disponibles INTEGER;
+BEGIN
+    SELECT
+        INTO entrades_disponibles S."AFORAMENT" - SUM("ENTRADES_VENUDES")
+    FROM
+        "PARTIDA" P, "SALA" S
+    WHERE
+        P."HOTEL" = hotel AND
+        P."SALA" = sala AND
+        P."JORNADA" = jornada AND
+        P."HOTEL" = S."HOTEL" AND
+        P."SALA" = S."NOM"
+    GROUP BY
+        S."HOTEL", S."NOM";
+    RETURN entrades_disponibles;
+END;
+$$ LANGUAGE 'plpgsql';
+
+-- -----------------------------------------------------
+-- ENTRADES_JORNADA
+-- -----------------------------------------------------
+DROP FUNCTION IF EXISTS ENTRADES_JORNADA(INTEGER);
+CREATE OR REPLACE FUNCTION ENTRADES_JORNADA(INTEGER)
+RETURNS TABLE("HOTEL" VARCHAR, "SALA" VARCHAR, "ENTRADES" INTEGER) AS $$
+DECLARE
+    jornada ALIAS FOR $1;
+BEGIN
+    RETURN QUERY
+        SELECT
+            *
+        FROM (
+            SELECT
+                S."HOTEL", S."NOM",
+                ENTRADES_DISPONIBLES(S."HOTEL", S."NOM", jornada) AS "ENTRADES"
+            FROM
+                "SALA" S
+            ) AS P
+        WHERE
+            P."ENTRADES" IS NOT NULL;
+END;
+$$ LANGUAGE 'plpgsql';
+
+-- -----------------------------------------------------
+-- FINALISTES
+-- -----------------------------------------------------
+DROP FUNCTION IF EXISTS FINALISTES();
+CREATE OR REPLACE FUNCTION FINALISTES()
+RETURNS TABLE("NOM" VARCHAR, "PAIS" VARCHAR, "PARTIDES_GUANYADES" INTEGER) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT
+            "NOM", "PAIS", "PARTIDES_GUANYADES"
+        FROM
+            "JUGADOR"
+        ORDER BY
+            "PARTIDES_GUANYADES" DESC
+        LIMIT 3;
+END;
+$$ LANGUAGE 'plpgsql';
+
+-- -----------------------------------------------------
+-- MAX_PAIS_VICTORIES
+-- -----------------------------------------------------
+DROP FUNCTION IF EXISTS MAX_PAIS_VICTORIES();
+CREATE OR REPLACE FUNCTION MAX_PAIS_VICTORIES()
+RETURNS TABLE("PAIS" VARCHAR, "VICTORIES" INTEGER) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT
+            "PAIS", SUM("PARTIDES_GUANYADES") AS VICTORIES
+        FROM
+            "JUGADOR"
+        GROUP BY
+            "PAIS"
+        ORDER BY
+            "VICTORIES" DESC
+        LIMIT 1;
+END;
+$$ LANGUAGE 'plpgsql';
+
+-- -----------------------------------------------------
+-- MAX_DURACIO_PARTIDA
+-- -----------------------------------------------------
+DROP FUNCTION IF EXISTS MAX_DURACIO_PARTIDA();
+CREATE OR REPLACE FUNCTION MAX_DURACIO_PARTIDA()
+RETURNS TABLE("PARTIDA" VARCHAR, "QUANTITAT_MOVIMENTS" INTEGER) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT
+            "PARTIDA", COUNT(*) AS "QUANTITAT_MOVIMENTS"
+        FROM
+            "MOVIMENT"
+        GROUP BY
+            "PARTIDA"
+        ORDER BY
+            "QUANTITAT_MOVIMENTS" DESC
+        LIMIT 1;
+END;
+$$ LANGUAGE 'plpgsql';
+
+-- -----------------------------------------------------
+-- DECIDIR_GUANYADOR
+--   In Chess Algebraic Notation, the winner is noted:
+--
+--     1-0 : White wins
+--     0-1 : Black wins
+--
+--   For noting ties, simply use 0-0.
+-- -----------------------------------------------------
+DROP FUNCTION IF EXISTS DECIDIR_GUANYADOR() CASCADE;
+CREATE OR REPLACE FUNCTION DECIDIR_GUANYADOR() RETURNS TRIGGER AS $$
+DECLARE
+    winner TEXT;
+    partida "PARTIDA"%ROWTYPE;
+BEGIN
+    SELECT * INTO partida FROM "PARTIDA" WHERE "ID" = NEW."PARTIDA";
+    IF NEW."DESCRIPCIO" = '1-0' THEN
+        UPDATE "JUGADOR" SET "PARTIDES_GUANYADES" = "PARTIDES_GUANYADES" + 1 WHERE "DNI" = partida."BLANQUES";
+        UPDATE "JUGADOR" SET "PARTIDES_PERDUDES" = "PARTIDES_PERDUDES" + 1 WHERE "DNI" = partida."NEGRES";
+        UPDATE "JUTGE" SET "VICTORIES_BLANQUES" = "VICTORIES_BLANQUES" + 1 WHERE "DNI" = partida."JUTGE";
+        UPDATE "PARTIDA" SET "GUANYADOR" = 'B' WHERE "ID" = NEW."PARTIDA";
+    END IF;
+    
+    IF NEW."DESCRIPCIO" = '0-1' THEN
+        UPDATE "JUGADOR" SET "PARTIDES_GUANYADES" = "PARTIDES_GUANYADES" + 1 WHERE "DNI" = partida."NEGRES";
+        UPDATE "JUGADOR" SET "PARTIDES_PERDUDES" = "PARTIDES_PERDUDES" + 1 WHERE "DNI" = partida."BLANQUES";
+        UPDATE "JUTGE" SET "VICTORIES_BLANQUES" = "VICTORIES_NEGRES" + 1 WHERE "DNI" = partida."JUTGE";
+        UPDATE "PARTIDA" SET "GUANYADOR" = 'N' WHERE "ID" = NEW."PARTIDA";
+    END IF;
+    
+    IF NEW."DESCRIPCIO" = '0-0' THEN
+        UPDATE "JUTGE" SET "TAULES" = "TAULES" + 1 WHERE "DNI" = partida."JUTGE";
+        UPDATE "PARTIDA" SET "GUANYADOR" = 'T' WHERE "ID" = NEW."PARTIDA";
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE TRIGGER DECIDEIX_GUANYADOR
+    AFTER INSERT ON "MOVIMENT"
+    FOR EACH ROW EXECUTE PROCEDURE DECIDIR_GUANYADOR();
+
+-- -----------------------------------------------------
+-- VERIFICAR_NACIONALITATS
+-- -----------------------------------------------------
+DROP FUNCTION IF EXISTS VERIFICAR_NACIONALITATS() CASCADE;
+CREATE OR REPLACE FUNCTION VERIFICAR_NACIONALITATS() RETURNS TRIGGER AS $$
+DECLARE
+    nacionalitat_jutge TEXT;
+    nacionalitat_blanques TEXT;
+    nacionalitat_negres TEXT;
+BEGIN
+    SELECT INTO nacionalitat_jutge "PAIS" FROM "JUTGE" WHERE "DNI" = NEW."JUTGE";
+    SELECT INTO nacionalitat_blanques "PAIS" FROM "JUGADOR" WHERE "DNI" = NEW."BLANQUES";
+    SELECT INTO nacionalitat_negres "PAIS" FROM "JUGADOR" WHERE "DNI" = NEW."NEGRES";
+    
+    IF nacionalitat_jutge = nacionalitat_blanques THEN
+        RAISE EXCEPTION 'BLANQUES TÉ LA MATEIXA NACIONALITAT QUE EL JUTGE';
+    END IF;
+
+    IF nacionalitat_jutge = nacionalitat_negres THEN
+        RAISE EXCEPTION 'NEGRES TÉ LA MATEIXA NACIONALITAT QUE EL JUTGE';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE TRIGGER VERIFICA_NACIONALITATS
+    BEFORE INSERT ON "PARTIDA"
+    FOR EACH ROW EXECUTE PROCEDURE VERIFICAR_NACIONALITATS();
+
 INSERT INTO "PAIS" ("NOM") VALUES ('Alemanya');
 INSERT INTO "PAIS" ("NOM") VALUES ('Anglaterra');
 INSERT INTO "PAIS" ("NOM") VALUES ('Espanya');
@@ -97,7 +410,7 @@ INSERT INTO "PARTIDA" ("ID", "GUANYADOR", "JUTGE", "BLANQUES", "NEGRES", "JORNAD
 INSERT INTO "PARTIDA" ("ID", "GUANYADOR", "JUTGE", "BLANQUES", "NEGRES", "JORNADA", "HOTEL", "SALA", "ENTRADES_VENUDES") VALUES ('18',NULL,'20400453H','10500332J','10700775L','2','Hotel Montserrat','Victòria','0');
 INSERT INTO "PARTIDA" ("ID", "GUANYADOR", "JUTGE", "BLANQUES", "NEGRES", "JORNADA", "HOTEL", "SALA", "ENTRADES_VENUDES") VALUES ('19',NULL,'20400453H','11000901D','10800332K','2','Hotel Montserrat','Victòria','0');
 INSERT INTO "PARTIDA" ("ID", "GUANYADOR", "JUTGE", "BLANQUES", "NEGRES", "JORNADA", "HOTEL", "SALA", "ENTRADES_VENUDES") VALUES ('20',NULL,'20400453H','11300443Y','11500678S','2','Hotel Montserrat','Victòria','0');
-INSERT INTO "PARTIDA" ("ID", "GUANYADOR", "JUTGE", "BLANQUES", "NEGRES", "JORNADA", "HOTEL", "SALA", "ENTRADES_VENUDES") VALUES ('21',NULL,'20100393R','11600283R','11900147M','2','Hotel Montserrat','Victòria','0');
+INSERT INTO "PARTIDA" ("ID", "GUANYADOR", "JUTGE", "BLANQUES", "NEGRES", "JORNADA", "HOTEL", "SALA", "ENTRADES_VENUDES") VALUES ('21',NULL,'20300643G','11600283R','11900147M','2','Hotel Montserrat','Victòria','0');
 INSERT INTO "PARTIDA" ("ID", "GUANYADOR", "JUTGE", "BLANQUES", "NEGRES", "JORNADA", "HOTEL", "SALA", "ENTRADES_VENUDES") VALUES ('22',NULL,'20200288L','12000922R','12200333P','2','Hotel Montserrat','Victòria','0');
 INSERT INTO "PARTIDA" ("ID", "GUANYADOR", "JUTGE", "BLANQUES", "NEGRES", "JORNADA", "HOTEL", "SALA", "ENTRADES_VENUDES") VALUES ('23',NULL,'20300643G','12500778U','12700123A','2','Hotel Montserrat','Victòria','0');
 INSERT INTO "PARTIDA" ("ID", "GUANYADOR", "JUTGE", "BLANQUES", "NEGRES", "JORNADA", "HOTEL", "SALA", "ENTRADES_VENUDES") VALUES ('24',NULL,'20300643G','12800234A','13100121L','2','Hotel Montserrat','Victòria','0');
