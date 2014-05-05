@@ -7,3 +7,5 @@ dist
 # Package Files #
 *.war
 *.ear
+
+*.pyc

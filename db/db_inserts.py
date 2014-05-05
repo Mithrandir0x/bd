@@ -233,7 +233,7 @@ def games_sql():
     insert_query_1 = ( ''
             'INSERT INTO "PARTIDA" ('
                 '"ID", '
-                '"GUANYADOR", '
+                '"RESULTAT", '
                 '"JUTGE", '
                 '"BLANQUES", '
                 '"NEGRES", '

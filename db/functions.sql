@@ -27,6 +27,30 @@ END;
 $$ LANGUAGE 'plpgsql';
 
 -- -----------------------------------------------------
+-- COMPRAR_ENTRADA
+-- -----------------------------------------------------
+DROP FUNCTION IF EXISTS COMPRAR_ENTRADA(VARCHAR, VARCHAR, INTEGER, VARCHAR);
+CREATE OR REPLACE FUNCTION COMPRAR_ENTRADA(VARCHAR, VARCHAR, INTEGER, VARCHAR) RETURNS INTEGER AS $$
+DECLARE
+    hotel ALIAS FOR $1;
+    sala ALIAS FOR $2;
+    jornada ALIAS FOR $3;
+    dni_taquiller ALIAS FOR $4;
+    ent_disp INTEGER;
+    partida INTEGER;
+BEGIN
+    SELECT "entrades_disponibles" INTO ent_disp FROM ENTRADES_DISPONIBLES(hotel, sala, jornada);
+    IF ent_disp > 0 THEN
+        SELECT "ID" INTO partida FROM "PARTIDA" WHERE "JORNADA" = jornada ORDER BY "ID" ASC LIMIT 1;
+        UPDATE "PARTIDA" SET "ENTRADES_VENUDES" = "ENTRADES_VENUDES" + 1 WHERE "ID" = partida;
+        UPDATE "TAQUILLER" SET "ENTRADES_VENUDES" = "ENTRADES_VENUDES" + 1 WHERE "DNI" = dni_taquiller;
+        RETURN '0';
+    END IF;
+    RETURN '-1';
+END;
+$$ LANGUAGE 'plpgsql';
+
+-- -----------------------------------------------------
 -- ENTRADES_JORNADA
 -- -----------------------------------------------------
 DROP FUNCTION IF EXISTS ENTRADES_JORNADA(INTEGER);
