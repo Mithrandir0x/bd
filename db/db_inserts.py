@@ -297,15 +297,15 @@ def games_sql():
         chamber_fk = games_chambers_map[gameday][1]
         sales = sales_chambers_map[gameday]
         print insert_query_1 % ( i, referee_fk, white_fk, black_fk, gameday_fk, hotel_fk, chamber_fk, sales )
-        # try:
-        #     with open('./moves/' + gameday + '.txt') as file:
-        #         moves = file.readlines()
-        #         for j, m in enumerate(moves):
-        #             m = m.strip()
-        #             if len(m) > 0: print insert_query_2 % ( i, j, m )
-        # except IOError:
-        #     # print 'File not found "%s.txt"' % gameday
-        #     pass
+        try:
+            with open('./moves/' + gameday + '.txt') as file:
+                moves = file.readlines()
+                for j, m in enumerate(moves):
+                    m = m.strip()
+                    if len(m) > 0: print insert_query_2 % ( i, j, m )
+        except IOError:
+            # print 'File not found "%s.txt"' % gameday
+            pass
 
 def all_insert_sql():
     countries_sql()
