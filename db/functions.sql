@@ -131,3 +131,48 @@ BEGIN
         LIMIT 1;
 END;
 $$ LANGUAGE 'plpgsql';
+
+-- -----------------------------------------------------
+-- NOM_JUGADOR
+-- -----------------------------------------------------
+DROP FUNCTION IF EXISTS NOM_JUGADOR(VARCHAR);
+CREATE OR REPLACE FUNCTION NOM_JUGADOR(VARCHAR) RETURNS VARCHAR AS $$
+DECLARE
+    dni ALIAS FOR $1;
+    nom_jugador VARCHAR;
+BEGIN
+    SELECT "NOM" INTO nom_jugador FROM "JUGADOR" WHERE "DNI" = dni;
+    RETURN nom_jugador;
+END;
+$$ LANGUAGE 'plpgsql';
+
+-- -----------------------------------------------------
+-- TANCAR_PARTIDA
+-- -----------------------------------------------------
+DROP FUNCTION IF EXISTS TANCAR_PARTIDA(VARCHAR, INTEGER, VARCHAR);
+CREATE OR REPLACE FUNCTION TANCAR_PARTIDA(VARCHAR, INTEGER, VARCHAR) RETURNS VOID AS $$
+DECLARE
+    jutgeDni ALIAS FOR $1;
+    partidaId ALIAS FOR $2;
+    resultat ALIAS FOR $3;
+    partida "PARTIDA"%ROWTYPE;
+BEGIN
+    UPDATE "PARTIDA" SET "RESULTAT" = resultat WHERE "ID" = partidaId;
+    SELECT * INTO partida FROM "PARTIDA" WHERE "ID" = partidaId;
+    IF resultat = 'B' THEN
+        UPDATE "JUGADOR" SET "PARTIDES_GUANYADES" = "PARTIDES_GUANYADES" + 1 WHERE "DNI" = partida."BLANQUES";
+        UPDATE "JUGADOR" SET "PARTIDES_PERDUDES" = "PARTIDES_PERDUDES" + 1 WHERE "DNI" = partida."NEGRES";
+        UPDATE "JUTGE" SET "VICTORIES_BLANQUES" = "VICTORIES_BLANQUES" + 1 WHERE "DNI" = partida."JUTGE";
+    END IF;
+    
+    IF NEW."DESCRIPCIO" = 'N' THEN
+        UPDATE "JUGADOR" SET "PARTIDES_GUANYADES" = "PARTIDES_GUANYADES" + 1 WHERE "DNI" = partida."NEGRES";
+        UPDATE "JUGADOR" SET "PARTIDES_PERDUDES" = "PARTIDES_PERDUDES" + 1 WHERE "DNI" = partida."BLANQUES";
+        UPDATE "JUTGE" SET "VICTORIES_BLANQUES" = "VICTORIES_NEGRES" + 1 WHERE "DNI" = partida."JUTGE";
+    END IF;
+    
+    IF NEW."DESCRIPCIO" = 'T' THEN
+        UPDATE "JUTGE" SET "TAULES" = "TAULES" + 1 WHERE "DNI" = partida."JUTGE";
+    END IF;
+END;
+$$ LANGUAGE 'plpgsql';
