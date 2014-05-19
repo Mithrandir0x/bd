@@ -9,11 +9,11 @@ public class VisitantMenu extends Menu
     private LoginMenu loginMenu = new LoginMenu();
 
     @Override
-    public void run() throws Exception 
+    public void executar() throws Exception 
     {
         while ( true )
         {
-            showOptions();
+            mostrarOpcions();
             
             waitNextInt();
             
@@ -21,7 +21,7 @@ public class VisitantMenu extends Menu
             switch (choice)
             {
                 case 1:
-                    loginMenu.run();
+                    loginMenu.executar();
                     break;
                 case 2:
                     visitantService.consultarJornada();
@@ -38,7 +38,7 @@ public class VisitantMenu extends Menu
     }
 
     @Override
-    public void showOptions() throws Exception
+    public void mostrarOpcions() throws Exception
     {
         System.out.println("******************************\n           CHESS TICKET\n******************************\n"
                 + "\n1-Log In"

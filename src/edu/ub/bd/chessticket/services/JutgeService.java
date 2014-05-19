@@ -57,14 +57,54 @@ public class JutgeService
         return consultarPartides(jutgeDni, false);
     }
 
-    public void tancarPartida(final String jutgeDni, final int partida, final String resultat)
+    public boolean tancarPartida(final String jutgeDni, final int partida, final String resultat)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        return new PostgreTransaction<Boolean>(){
 
-    public void afegirMoviments()
+            @Override
+            public Boolean run() throws Exception
+            {
+                String query = "SELECT * FROM TANCAR_PARTIDA(?, ?, ?)";
+                
+                PreparedStatement s = C.prepareStatement(query);
+                s.setString(1, jutgeDni);
+                s.setInt(2, partida);
+                s.setString(3, resultat);
+                s.executeQuery();
+                
+                return true;
+            }
+            
+        }.execute();
+    }
+    
+    public boolean omplirMoviments(final int partidaId, final List<String> moviments)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new PostgreTransaction<Boolean>(){
+
+            @Override
+            public Boolean run() throws Exception
+            {
+                // INSERT INTO "MOVIMENT" ("PARTIDA", "ORDRE", "DESCRIPCIO") VALUES (?, ?, ?)
+                String query = "INSERT INTO \"MOVIMENT\" (\"PARTIDA\", \"ORDRE\", \"DESCRIPCIO\") VALUES (?, ?, ?)";
+                int ordre = 0;
+                
+                PreparedStatement s = C.prepareStatement(query);
+                
+                for ( String moviment : moviments )
+                {
+                    s.setInt(1, partidaId);
+                    s.setInt(2, ordre);
+                    s.setString(3, moviment);
+                    s.executeUpdate();
+                    
+                    ordre++;
+                }
+                
+                return true;
+            }
+            
+        }.execute();
     }
 
 }

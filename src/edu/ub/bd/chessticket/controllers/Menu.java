@@ -1,10 +1,12 @@
 package edu.ub.bd.chessticket.controllers;
 
+import java.io.Console;
 import java.util.Scanner;
 
 public abstract class Menu
 {
     protected static Scanner sc = new Scanner(System.in);
+    protected static Console c = System.console();
     
     protected String usuariDni;
     
@@ -22,8 +24,8 @@ public abstract class Menu
         }
     }
     
-    public abstract void run() throws Exception;
+    public abstract void executar() throws Exception;
     
-    public abstract void showOptions() throws Exception;
+    public abstract void mostrarOpcions() throws Exception;
     
 }

@@ -12,13 +12,13 @@ public class TaquillerMenu extends Menu
     private TaquillerService taquillerService = new TaquillerService();
     
     @Override
-    public void run() throws Exception
+    public void executar() throws Exception
     {
         boolean goBack = false;
         
         while ( !goBack )
         {
-            showOptions();
+            mostrarOpcions();
             
             waitNextInt();
             
@@ -46,7 +46,7 @@ public class TaquillerMenu extends Menu
     }
 
     @Override
-    public void showOptions() throws Exception
+    public void mostrarOpcions() throws Exception
     {
         System.out.println("******************************\n         MENÚ TAQUILLER\n******************************\n"
             + "\n1-Consultar Jornada"

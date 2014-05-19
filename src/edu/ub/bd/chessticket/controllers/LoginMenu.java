@@ -5,15 +5,16 @@ public class LoginMenu extends Menu
     
     private TaquillerMenu taquillerMenu = new TaquillerMenu();
     private JutgeMenu jutgeMenu = new JutgeMenu();
+    private OrganitzadorMenu organitzadorMenu = new OrganitzadorMenu();
 
     @Override
-    public void run() throws Exception
+    public void executar() throws Exception
     {
         boolean goBack = false;
         
         while ( !goBack )
         {
-            showOptions();
+            mostrarOpcions();
             
             waitNextInt();
             
@@ -22,13 +23,14 @@ public class LoginMenu extends Menu
             {
                 case 1:
                     taquillerMenu.setUsuariDni("43382738F");
-                    taquillerMenu.run();
+                    taquillerMenu.executar();
                     break;
                 case 2:
                     jutgeMenu.setUsuariDni("20400453H");
-                    jutgeMenu.run();
+                    jutgeMenu.executar();
                     break;
                 case 3:
+                    organitzadorMenu.executar();
                     break;
                 case 4:
                     goBack = true;
@@ -42,13 +44,13 @@ public class LoginMenu extends Menu
     }
 
     @Override
-    public void showOptions() throws Exception
+    public void mostrarOpcions() throws Exception
     {
         System.out.println("******************************\n         LOGIN\n******************************\n"
                 + "\n1-Taquiller"
                 + "\n2-Jutge"
                 + "\n3-Organitzador"
-                + "\n4-Anònim"
+                + "\n4-Visitant"
                 + "\n5-Sortir");
     }
     
