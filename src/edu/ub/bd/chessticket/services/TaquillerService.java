@@ -5,6 +5,7 @@ import edu.ub.bd.utils.PostgreTransaction;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class TaquillerService extends VisitantService
@@ -39,7 +40,7 @@ public class TaquillerService extends VisitantService
         }.execute();
     }
     
-    public List<Sala> getSalesDisponibles(final int jornada)
+    public List<Sala> consultarSalesDisponibles(final int jornada)
     {
         return new PostgreTransaction<List<Sala>>(){
 
@@ -65,6 +66,35 @@ public class TaquillerService extends VisitantService
                         l.add(new Sala(sala, hotel));
                         i++;
                     }
+                }
+                
+                return l;
+            }
+            
+        }.execute();
+    }
+    
+    public List<Integer> consultarTotesJornades()
+    {
+        return new PostgreTransaction<List<Integer>>(){
+
+            @Override
+            public List<Integer> run() throws Exception
+            {
+                int i = 0;
+                List<Integer> l = new ArrayList<Integer>();
+                String query = "SELECT \"ID\", \"DATA_REALITZACIO\" FROM \"JORNADA\"";
+                
+                PreparedStatement s = C.prepareStatement(query);
+                ResultSet rs = s.executeQuery();
+                while ( rs.next() )
+                {
+                    int id = rs.getInt(1);
+                    Date data_realitzacio = rs.getDate(2);
+                    
+                    System.out.println(String.format("[%2d] %32s", id, data_realitzacio));
+                    l.add(id);
+                    i++;
                 }
                 
                 return l;

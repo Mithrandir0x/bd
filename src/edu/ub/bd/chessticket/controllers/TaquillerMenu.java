@@ -58,10 +58,11 @@ public class TaquillerMenu extends Menu
     
     private void vendreEntrada()
     {
+        taquillerService.consultarTotesJornades();
         System.out.println("Introdueixi la jornada:");
         waitNextInt();
         int jornada = sc.nextInt();
-        List<Sala> salesDisponibles = taquillerService.getSalesDisponibles(jornada);
+        List<Sala> salesDisponibles = taquillerService.consultarSalesDisponibles(jornada);
         
         if ( salesDisponibles.size() > 0 )
         {
@@ -76,7 +77,7 @@ public class TaquillerMenu extends Menu
                 if ( r )
                 {
                     System.out.println("S'ha venut l'entrada per a la sala " + sala);
-                    taquillerService.getSalesDisponibles(jornada);
+                    taquillerService.consultarSalesDisponibles(jornada);
                 }
                 else
                 {
