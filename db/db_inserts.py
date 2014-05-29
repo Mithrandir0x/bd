@@ -7,6 +7,7 @@ players_map = {}
 referees_map = {}
 games_chambers_map = {}
 sales_chambers_map = {}
+users = []
 
 def countries_sql():
     insert_query_1 = 'INSERT INTO "PAIS" ("NOM") VALUES (\'%s\');'
@@ -70,10 +71,30 @@ def hotels_sql():
                 sales_chambers_map[gameday] = 0
             games_chambers_map[gameday] = ( hotel_fk, name )
 
+def organizers_sql():
+    insert_query_1 = ( ''
+            'INSERT INTO "USUARI" ('
+                '"DNI", '
+                '"ROL", '
+                '"NOM", '
+                '"GENERE", '
+                '"PAIS"'
+            ') VALUES ('
+                "'%s',"
+                "'ORGANITZADOR',"
+                "'%s',"
+                "'%s',"
+                "'%s'"
+            ');'
+        )
+    print insert_query_1 % ( '42516878R', 'Salvador Puig', 'Sr.', 'Espanya' )
+    users.append(('42516878R', 'ORGANITZADOR'))
+
 def vendors_sql():
     insert_query_1 = ( ''
             'INSERT INTO "TAQUILLER" ('
                 '"DNI", '
+                '"ROL", '
                 '"NOM", '
                 '"TELEFON", '
                 '"GENERE", '
@@ -81,6 +102,7 @@ def vendors_sql():
                 '"ENTRADES_VENUDES"'
             ') VALUES ('
                 "'%s',"
+                "'TAQUILLER',"
                 "'%s',"
                 "'%s',"
                 "'%s',"
@@ -100,6 +122,7 @@ def vendors_sql():
         gender = data[2]
         ph = data[3]
         print insert_query_1 % ( dni, name, ph, gender, 'Espanya', 0 )
+        users.append((dni, 'TAQUILLER'))
 
 def referees_sql():
     global referees_map
@@ -107,6 +130,7 @@ def referees_sql():
     insert_query_1 = ( ''
             'INSERT INTO "JUTGE" ('
                 '"DNI", '
+                '"ROL", '
                 '"NOM", '
                 '"TELEFON", '
                 '"GENERE", '
@@ -117,6 +141,7 @@ def referees_sql():
                 '"VICTORIES_NEGRES"'
             ') VALUES ('
                 "'%s',"
+                "'JUTGE',"
                 "'%s',"
                 "NULL,"
                 "'%s',"
@@ -143,6 +168,7 @@ def referees_sql():
         print insert_query_1 % ( dni, name, gender, hotel, country, 0, 0, 0 )
 
         referees_map[name] = dni
+        users.append((dni, 'JUTGE'))
 
 def players_sql():
     global players_map
@@ -220,6 +246,11 @@ def players_sql():
         print insert_query_1 % ( dni, name, gender, hotel, country, 0, 0 )
 
         players_map[name] = dni
+
+def users_sql():
+    insert_query_1 = 'INSERT INTO "USUARI" ("DNI", "ROL", "ULTIM_ACCES") VALUES (\'%s\', \'%s\', NULL);'
+    for u in users:
+        print insert_query_1 % ( u[0], u[1] )
 
 def gamedays_sql():
     insert_query_1 = 'INSERT INTO "JORNADA" ("ID", "DATA_REALITZACIO") VALUES (\'%s\', NULL);'
@@ -312,12 +343,16 @@ def all_insert_sql():
     print
     hotels_sql()
     print
+    organizers_sql()
+    print
     vendors_sql()
     print
     referees_sql()
     print
     players_sql()
     print
+    # users_sql()
+    # print
     gamedays_sql()
     print
     games_sql()

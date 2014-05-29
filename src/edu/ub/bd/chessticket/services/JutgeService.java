@@ -49,8 +49,8 @@ public class JutgeService
             public List<Integer> run() throws Exception
             {
                 List<Integer> l = new ArrayList<Integer>();
-                // SELECT "ID", NOM_JUGADOR("BLANQUES") AS BLANQUES, NOM_JUGADOR("NEGRES") AS NEGRES, "JORNADA", "RESULTAT" FROM "PARTIDA" WHERE "JUTGE" = ?
-                String query = "SELECT \"ID\", NOM_JUGADOR(\"BLANQUES\") AS BLANQUES, NOM_JUGADOR(\"NEGRES\") AS NEGRES, \"JORNADA\", \"RESULTAT\" FROM \"PARTIDA\" WHERE \"JUTGE\" = ?";
+                // SELECT "ID", b."NOM" AS BLANQUES, n."NOM" AS NEGRES, "JORNADA", "RESULTAT" FROM "JUGADOR" b, "JUGADOR" n, "PARTIDA" WHERE b."DNI" = "BLANQUES" AND n."DNI" = "NEGRES" AND "JUTGE" = ? ORDER BY "JORNADA" ASC
+                String query = "SELECT \"ID\", b.\"NOM\" AS BLANQUES, n.\"NOM\" AS NEGRES, \"JORNADA\", \"RESULTAT\" FROM \"JUGADOR\" b, \"JUGADOR\" n, \"PARTIDA\" WHERE b.\"DNI\" = \"BLANQUES\" AND n.\"DNI\" = \"NEGRES\" AND \"JUTGE\" = ? ORDER BY \"JORNADA\" ASC";
                 
                 PreparedStatement s = C.prepareStatement(query);
                 s.setString(1, jutgeDni);

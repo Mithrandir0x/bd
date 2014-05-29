@@ -15,8 +15,8 @@ public class VisitantService
             @Override
             public Object run() throws Exception
             {
-                // SELECT "JORNADA", NOM_JUGADOR("BLANQUES") AS blanques, NOM_JUGADOR("NEGRES") AS negres, "HOTEL", "SALA", "RESULTAT" FROM "PARTIDA" ORDER BY "JORNADA" ASC
-                String query =  "SELECT \"JORNADA\", NOM_JUGADOR(\"BLANQUES\") AS blanques, NOM_JUGADOR(\"NEGRES\") AS negres, \"HOTEL\", \"SALA\", \"RESULTAT\" FROM \"PARTIDA\" ORDER BY \"JORNADA\" ASC";
+                // SELECT p."JORNADA", b."NOM" AS blanques, n."NOM" AS negres, p."HOTEL", p."SALA", p."RESULTAT" FROM "JUGADOR" b, "JUGADOR" n, "PARTIDA" p WHERE b."DNI" = p."BLANQUES" AND n."DNI" = p."NEGRES" ORDER BY p."JORNADA" ASC
+                String query =  "SELECT p.\"JORNADA\", b.\"NOM\" AS blanques, n.\"NOM\" AS negres, p.\"HOTEL\", p.\"SALA\", p.\"RESULTAT\" FROM \"JUGADOR\" b, \"JUGADOR\" n, \"PARTIDA\" p WHERE b.\"DNI\" = p.\"BLANQUES\" AND n.\"DNI\" = p.\"NEGRES\" ORDER BY p.\"JORNADA\" ASC";
                 
                 Statement s = C.createStatement();
                 ResultSet rs = s.executeQuery(query);
@@ -55,7 +55,7 @@ public class VisitantService
                     String nom = rs.getString(1);
                     String pais = rs.getString(2);
                     int partidesGuanyades = rs.getInt(3);
-                    System.out.println(MessageFormat.format("%32s | %16s | %2d", nom, pais, partidesGuanyades));
+                    System.out.println(String.format("%32s | %16s | %2d", nom, pais, partidesGuanyades));
                 }
                 
                 return null;

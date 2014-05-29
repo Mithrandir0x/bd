@@ -133,20 +133,6 @@ END;
 $$ LANGUAGE 'plpgsql';
 
 -- -----------------------------------------------------
--- NOM_JUGADOR
--- -----------------------------------------------------
-DROP FUNCTION IF EXISTS NOM_JUGADOR(VARCHAR);
-CREATE OR REPLACE FUNCTION NOM_JUGADOR(VARCHAR) RETURNS VARCHAR AS $$
-DECLARE
-    dni ALIAS FOR $1;
-    nom_jugador VARCHAR;
-BEGIN
-    SELECT "NOM" INTO nom_jugador FROM "JUGADOR" WHERE "DNI" = dni;
-    RETURN nom_jugador;
-END;
-$$ LANGUAGE 'plpgsql';
-
--- -----------------------------------------------------
 -- TANCAR_PARTIDA
 -- -----------------------------------------------------
 DROP FUNCTION IF EXISTS TANCAR_PARTIDA(VARCHAR, INTEGER, VARCHAR);
@@ -177,3 +163,13 @@ BEGIN
 END;
 $$ LANGUAGE 'plpgsql';
 
+
+CREATE OR REPLACE FUNCTION EXISTEIX_USUARI(VARCHAR)
+RETURNS TABLE("NOM" VARCHAR, "ROL" VARCHAR) AS $$
+DECLARE
+    usuariDni ALIAS FOR $1;
+    usuari % ROWTYPE;
+BEGIN
+    RETURN QUERY SELECT "NOM", "ROL" FROM "USUARI" WHERE "DNI" = usuariDni;
+END;
+$$ LANGUAGE 'plpgsql';

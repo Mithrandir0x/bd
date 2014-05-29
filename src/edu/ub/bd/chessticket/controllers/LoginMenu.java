@@ -1,11 +1,19 @@
 package edu.ub.bd.chessticket.controllers;
 
+import edu.ub.bd.chessticket.models.Usuari;
+import edu.ub.bd.chessticket.services.LoginService;
+
 public class LoginMenu extends Menu
 {
     
     private TaquillerMenu taquillerMenu = new TaquillerMenu();
     private JutgeMenu jutgeMenu = new JutgeMenu();
     private OrganitzadorMenu organitzadorMenu = new OrganitzadorMenu();
+    
+    private LoginService loginService = new LoginService();
+    
+    private Menu menu;
+    private Usuari usuari;
 
     @Override
     public void executar() throws Exception
@@ -14,31 +22,30 @@ public class LoginMenu extends Menu
         
         while ( !goBack )
         {
+            if ( usuari != null )
+            {
+                // Aquesta condicio es necessaria quan es torna de qualsevol
+                // altre menu instanciat des d'aquest punt. S'ha de reiniciar
+                // l'estat d'aquestes dues variables.
+                usuari = null;
+                menu = null;
+                break;
+            }
+            
             mostrarOpcions();
             
-            waitNextInt();
+            String dni = c.readLine("Introdueixi el DNI: ");
             
-            int choice=sc.nextInt();
-            switch (choice)
+            menu = ferLogin(dni);
+            
+            if ( menu != null )
             {
-                case 1:
-                    taquillerMenu.setUsuariDni("43382738F");
-                    taquillerMenu.executar();
-                    break;
-                case 2:
-                    jutgeMenu.setUsuariDni("20400453H");
-                    jutgeMenu.executar();
-                    break;
-                case 3:
-                    organitzadorMenu.executar();
-                    break;
-                case 4:
-                    goBack = true;
-                    break;
-                case 5:
-                    System.exit(0);
-                default:
-                    System.out.println("Valor incorrecte. Si us plau, torna a seleccionar la opció desitjada.");
+                menu.setUsuariDni(usuari.getDni());
+                menu.executar();
+            }
+            else
+            {
+                goBack = true;
             }
         }
     }
@@ -46,12 +53,31 @@ public class LoginMenu extends Menu
     @Override
     public void mostrarOpcions() throws Exception
     {
-        System.out.println("******************************\n         LOGIN\n******************************\n"
-                + "\n1-Taquiller"
-                + "\n2-Jutge"
-                + "\n3-Organitzador"
-                + "\n4-Visitant"
-                + "\n5-Sortir");
+        System.out.println("******************************\n         LOGIN\n******************************\n");
+    }
+    
+    private Menu ferLogin(String dni) throws Exception
+    {
+        usuari = loginService.verificarUsuari(dni);
+        
+        if ( usuari != null )
+        {
+            System.out.println(String.format("Benvingut, %s [Rol: %s]", usuari.getNom(), usuari.getRol()));
+            
+                 if ( usuari.getRol().equals("TAQUILLER") )    { return taquillerMenu; }
+            else if ( usuari.getRol().equals("JUTGE") )        { return jutgeMenu; }
+            else if ( usuari.getRol().equals("ORGANITZADOR") ) { return organitzadorMenu; }
+            else
+            {
+                System.out.println("Rol desconegut. Aixo no hauria de pasar");
+            }
+        }
+        else
+        {
+            System.out.println("\nADVERTENCIA: Usuari no reconegut.\n");
+        }
+        
+        return null;
     }
     
 }
