@@ -1,16 +1,7 @@
 package edu.ub.bd.chessticket.models;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Usuari
 {
-    
-    public static enum Rols {
-        ORGANITZADOR,
-        TAQUILLER,
-        JUTGE
-    }
 
     private String dni;
     private String nom;
