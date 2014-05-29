@@ -298,17 +298,6 @@ BEGIN
 END;
 $$ LANGUAGE 'plpgsql';
 
-
-CREATE OR REPLACE FUNCTION EXISTEIX_USUARI(VARCHAR)
-RETURNS TABLE("NOM" VARCHAR, "ROL" VARCHAR) AS $$
-DECLARE
-    usuariDni ALIAS FOR $1;
-    usuari % ROWTYPE;
-BEGIN
-    RETURN QUERY SELECT "NOM", "ROL" FROM "USUARI" WHERE "DNI" = usuariDni;
-END;
-$$ LANGUAGE 'plpgsql';
-
 -- -----------------------------------------------------
 -- DECIDIR_GUANYADOR
 --   In Chess Algebraic Notation, the winner is noted:
