@@ -22,6 +22,7 @@ public class OrganitzadorMenu extends Menu
         {
             mostrarOpcions();
             
+            System.out.print("\nOPCIO: ");
             waitNextInt();
             
             int choice=sc.nextInt();
@@ -36,7 +37,7 @@ public class OrganitzadorMenu extends Menu
                 case 3:
                     System.exit(0);
                 default:
-                    System.out.println("Valor incorrecte. Si us plau, torna a seleccionar la opció desitjada.");
+                    System.out.println("\nValor incorrecte. Si us plau, torna a seleccionar la opció desitjada.\n");
             }
         }
     }
@@ -93,11 +94,11 @@ public class OrganitzadorMenu extends Menu
             Integer result = organitzadorService.crearPartida(jugadors.get(jugador_blanques), jugadors.get(jugador_negres), jutges.get(jutge), jornada, sales.get(sala));
             if ( result != null )
             {
-                System.out.println("S'ha creat la nova partida amb exit.");
+                System.out.println("\nS'ha creat la nova partida amb exit.\n");
             }
             else
             {
-                System.out.println("No s'ha pogut crear la partida.");
+                System.out.println("\nNo s'ha pogut crear la partida.\n");
             }
         }
         catch ( Exception ex )
@@ -111,13 +112,14 @@ public class OrganitzadorMenu extends Menu
         System.out.println("Vol crear una nova jornada o vol utilitzar una jornada existent?\n"
             + "\n1-Crear una nova jornada"
             + "\n2-Utilitzar una jornada existent");
+        System.out.print("\nOPCIO: ");
         waitNextInt();
         return sc.nextInt() == 1;
     }
     
     private int demanar(String enquiry)
     {
-        System.out.println(enquiry);
+        System.out.print(enquiry + " ");
         waitNextInt();
         return sc.nextInt();
     }

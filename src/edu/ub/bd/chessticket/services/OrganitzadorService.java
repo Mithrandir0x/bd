@@ -22,6 +22,9 @@ public class OrganitzadorService
                 Double dId = Math.random() * 10000;
                 int id = dId.intValue();
                 
+                System.out.println("Es creara la PARTIDA [" + id + "], on jugara [" + blanques + "] com a BLANQUES, i [" + negres + "] com a NEGRES, i sera arbitrat per [" + jutge + "].");
+                System.out.println("La partida es fara a la SALA [" + sala.getNom() + "] del HOTEL [" + sala.getHotel() + "].");
+                
                 // INSERT INTO "PARTIDA" ("ID", "RESULTAT", "JUTGE", "BLANQUES", "NEGRES", "JORNADA", "HOTEL", "SALA", "ENTRADES_VENUDES") VALUES (?, NULL, ?, ?, ?, ?, ?, '0')
                 String query = "INSERT INTO \"PARTIDA\" (\"ID\", \"RESULTAT\", \"JUTGE\", \"BLANQUES\", \"NEGRES\", \"JORNADA\", \"HOTEL\", \"SALA\", \"ENTRADES_VENUDES\") VALUES (?, NULL, ?, ?, ?, ?, ?, ?, '0')";
                 

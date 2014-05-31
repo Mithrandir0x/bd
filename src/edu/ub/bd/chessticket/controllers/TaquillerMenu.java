@@ -20,6 +20,7 @@ public class TaquillerMenu extends Menu
         {
             mostrarOpcions();
             
+            System.out.print("\nOPCIO: ");
             waitNextInt();
             
             int choice=sc.nextInt();
@@ -40,7 +41,7 @@ public class TaquillerMenu extends Menu
                 case 5:
                     System.exit(0);
                 default:
-                    System.out.println("Valor incorrecte. Si us plau, torna a seleccionar la opció desitjada.");
+                    System.out.println("\nValor incorrecte. Si us plau, torna a seleccionar la opció desitjada.\n");
             }
         }
     }
@@ -58,15 +59,23 @@ public class TaquillerMenu extends Menu
     
     private void vendreEntrada()
     {
-        taquillerService.consultarTotesJornades();
-        System.out.println("Introdueixi la jornada:");
+        List<Integer> jornades = taquillerService.consultarJornadesDisponibles();
+        
+        System.out.print("Introdueixi el identificador de la jornada: ");
         waitNextInt();
         int jornada = sc.nextInt();
+        
+        if ( !jornades.contains(jornada) )
+        {
+            System.out.println("La jornada [" + jornada + "] no es valida.");
+            return;
+        }
+        
         List<Sala> salesDisponibles = taquillerService.consultarSalesDisponibles(jornada);
         
         if ( salesDisponibles.size() > 0 )
         {
-            System.out.println("Introdueixi la sala:");
+            System.out.print("\nIntrodueixi la sala: ");
             waitNextInt();
             int salaId = sc.nextInt();
             if ( salaId >= 0 && salaId < salesDisponibles.size() )
@@ -76,23 +85,22 @@ public class TaquillerMenu extends Menu
                 boolean r = taquillerService.vendreEntrada(sala, jornada, usuariDni);
                 if ( r )
                 {
-                    System.out.println("S'ha venut l'entrada per a la sala " + sala);
+                    System.out.println("\nS'ha venut l'entrada per a la sala " + sala + ".\n");
                     taquillerService.consultarSalesDisponibles(jornada);
                 }
                 else
                 {
-                    System.out.println("S'ha intentat vendre una entrada per una sala on no hi han entrades disponibles.");
-                    return;
+                    System.out.println("\nS'ha intentat vendre una entrada per una sala on no hi han entrades disponibles.\n");
                 }
             }
             else
             {
-                System.out.println("La sala seleccionada no és vàlida.");
+                System.out.println("\nLa sala [" + salaId + "] no és vàlida.\n");
             }
         }
         else
         {
-            System.out.println("No hi han sales disponibles per aquesta jornada.");
+            System.out.println("\nNo hi han sales disponibles per aquesta jornada.\n");
         }
     }
     

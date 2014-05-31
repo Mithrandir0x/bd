@@ -62,14 +62,14 @@ public class LoginMenu extends Menu
         
         if ( usuari != null )
         {
-            System.out.println(String.format("Benvingut, %s [Rol: %s]", usuari.getNom(), usuari.getRol()));
+            System.out.println(String.format("\nBenvingut, %s [Rol: %s]\n", usuari.getNom(), usuari.getRol()));
             
                  if ( usuari.getRol().equals("TAQUILLER") )    { return taquillerMenu; }
             else if ( usuari.getRol().equals("JUTGE") )        { return jutgeMenu; }
             else if ( usuari.getRol().equals("ORGANITZADOR") ) { return organitzadorMenu; }
             else
             {
-                System.out.println("Rol desconegut. Aixo no hauria de pasar");
+                System.out.println("\nRol desconegut. Aixo no hauria de pasar\n");
             }
         }
         else

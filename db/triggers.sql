@@ -8,7 +8,6 @@
 --
 --   For noting ties, simply use 0-0.
 -- -----------------------------------------------------
-DROP FUNCTION IF EXISTS DECIDIR_GUANYADOR() CASCADE;
 CREATE OR REPLACE FUNCTION DECIDIR_GUANYADOR() RETURNS TRIGGER AS $$
 DECLARE
     winner TEXT;
@@ -45,7 +44,6 @@ CREATE TRIGGER DECIDEIX_GUANYADOR
 -- -----------------------------------------------------
 -- VERIFICAR_NACIONALITATS
 -- -----------------------------------------------------
-DROP FUNCTION IF EXISTS VERIFICAR_NACIONALITATS() CASCADE;
 CREATE OR REPLACE FUNCTION VERIFICAR_NACIONALITATS() RETURNS TRIGGER AS $$
 DECLARE
     nacionalitat_jutge TEXT;

@@ -21,6 +21,7 @@ public class JutgeMenu extends Menu
         {
             mostrarOpcions();
             
+            System.out.print("\nOPCIO: ");
             waitNextInt();
             
             int choice=sc.nextInt();
@@ -38,7 +39,7 @@ public class JutgeMenu extends Menu
                 case 4:
                     System.exit(0);
                 default:
-                    System.out.println("Valor incorrecte. Si us plau, torna a seleccionar la opció desitjada.");
+                    System.out.println("\nValor incorrecte. Si us plau, torna a seleccionar la opció desitjada.\n");
             }
         }
     }
@@ -62,7 +63,7 @@ public class JutgeMenu extends Menu
         
         if ( partidaIds.size() > 0 )
         {
-            System.out.println("Selecciona la partida:");
+            System.out.print("\nSelecciona el identificador de la partida a tancar: ");
             waitNextInt();
             int partidaId = sc.nextInt();
             
@@ -71,26 +72,26 @@ public class JutgeMenu extends Menu
                 if ( volFitxerPartida() )
                 {
                     if ( importarFitxer(partidaId) )
-                        System.out.println("S'ha importat amb exit la llista de moviments.");
+                        System.out.println("\nS'ha importat amb exit la llista de moviments per a la partida [" + partidaId + "].\n");
                     else
-                        System.out.println("No s'ha pogut importar la llista de moviments.");
+                        System.out.println("\nNo s'ha pogut importar la llista de moviments per a la partida [" + partidaId + "].\n");
                 }
                 else
                 {
                     if ( tancarPartida(partidaId) )
-                        System.out.println("S'ha tancat la partida amb exit.");
+                        System.out.println("\nS'ha tancat la partida [" + partidaId + "] amb exit.\n");
                     else
-                        System.out.println("No es pot tancar la partida.");
+                        System.out.println("\nNo es pot tancar la partida [" + partidaId + "].\n");
                 }
             }
             else
             {
-                System.out.println("Identificador de partida invalid.");
+                System.out.println("\nIdentificador de partida invalid.\n");
             }
         }
         else
         {
-            System.out.println("No hi ha cap partida disponible per ser tancada.");
+            System.out.println("\nNo hi ha cap partida disponible per ser tancada.\n");
         }
     }
     
@@ -99,13 +100,14 @@ public class JutgeMenu extends Menu
         System.out.println("Vol importar un fitxer de moviments de la partida?\n"
                 + "\n1-Si"
                 + "\n2-No");
+        System.out.print("\nOPCIO: ");
         waitNextInt();
         return sc.nextInt() == 1;
     }
     
     private boolean importarFitxer(int partidaId) throws Exception
     {
-        String path = c.readLine("Escriu el nom del fitxer: ");
+        String path = c.readLine("\nEscriu el nom del fitxer: ");
         
         List<String> moviments = llegirFitxerMoviments(path);
         
@@ -136,6 +138,7 @@ public class JutgeMenu extends Menu
                 + "\n1-Blanques"
                 + "\n2-Negres"
                 + "\n3-Taules");
+        System.out.print("\nOPCIO: ");
         waitNextInt();
         int resultId = sc.nextInt();
 

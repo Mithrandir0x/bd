@@ -29,7 +29,7 @@ public class JugadorService
                     String nom = rs.getString(2);
                     String pais = rs.getString(9);
                     
-                    System.out.println(String.format("[%2d] %32s | %32s | %32s", i, dni, nom, pais));
+                    System.out.println(String.format("[%2d] %16s | %24s | %16s", i, dni, nom, pais));
                     
                     l.add(dni);
                 }

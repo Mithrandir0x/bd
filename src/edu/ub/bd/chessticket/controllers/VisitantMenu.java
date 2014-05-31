@@ -15,6 +15,7 @@ public class VisitantMenu extends Menu
         {
             mostrarOpcions();
             
+            System.out.print("\nOPCIO: ");
             waitNextInt();
             
             int choice=sc.nextInt();
@@ -32,7 +33,7 @@ public class VisitantMenu extends Menu
                 case 4:
                     System.exit(0);
                 default:
-                    System.out.println("Valor incorrecte. Si us plau, torna a seleccionar la opció desitjada.");
+                    System.out.println("\nValor incorrecte. Si us plau, torna a seleccionar la opció desitjada.\n");
             }
         }
     }

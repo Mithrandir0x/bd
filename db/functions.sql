@@ -2,7 +2,6 @@
 -- -----------------------------------------------------
 -- ENTRADES_DISPONIBLES
 -- -----------------------------------------------------
-DROP FUNCTION IF EXISTS ENTRADES_DISPONIBLES(VARCHAR, VARCHAR, INTEGER);
 CREATE OR REPLACE FUNCTION ENTRADES_DISPONIBLES(VARCHAR, VARCHAR, INTEGER) RETURNS INTEGER AS $$
 DECLARE
     hotel ALIAS FOR $1;
@@ -29,7 +28,6 @@ $$ LANGUAGE 'plpgsql';
 -- -----------------------------------------------------
 -- COMPRAR_ENTRADA
 -- -----------------------------------------------------
-DROP FUNCTION IF EXISTS COMPRAR_ENTRADA(VARCHAR, VARCHAR, INTEGER, VARCHAR);
 CREATE OR REPLACE FUNCTION COMPRAR_ENTRADA(VARCHAR, VARCHAR, INTEGER, VARCHAR) RETURNS INTEGER AS $$
 DECLARE
     hotel ALIAS FOR $1;
@@ -53,7 +51,6 @@ $$ LANGUAGE 'plpgsql';
 -- -----------------------------------------------------
 -- ENTRADES_JORNADA
 -- -----------------------------------------------------
-DROP FUNCTION IF EXISTS ENTRADES_JORNADA(INTEGER);
 CREATE OR REPLACE FUNCTION ENTRADES_JORNADA(INTEGER)
 RETURNS TABLE("HOTEL" VARCHAR, "SALA" VARCHAR, "ENTRADES" INTEGER) AS $$
 DECLARE
@@ -77,7 +74,6 @@ $$ LANGUAGE 'plpgsql';
 -- -----------------------------------------------------
 -- FINALISTES
 -- -----------------------------------------------------
-DROP FUNCTION IF EXISTS FINALISTES();
 CREATE OR REPLACE FUNCTION FINALISTES()
 RETURNS TABLE("NOM" VARCHAR, "PAIS" VARCHAR, "PARTIDES_GUANYADES" INTEGER) AS $$
 BEGIN
@@ -95,7 +91,6 @@ $$ LANGUAGE 'plpgsql';
 -- -----------------------------------------------------
 -- MAX_PAIS_VICTORIES
 -- -----------------------------------------------------
-DROP FUNCTION IF EXISTS MAX_PAIS_VICTORIES();
 CREATE OR REPLACE FUNCTION MAX_PAIS_VICTORIES()
 RETURNS TABLE("PAIS" VARCHAR, "VICTORIES" INTEGER) AS $$
 BEGIN
@@ -115,7 +110,6 @@ $$ LANGUAGE 'plpgsql';
 -- -----------------------------------------------------
 -- MAX_DURACIO_PARTIDA
 -- -----------------------------------------------------
-DROP FUNCTION IF EXISTS MAX_DURACIO_PARTIDA();
 CREATE OR REPLACE FUNCTION MAX_DURACIO_PARTIDA()
 RETURNS TABLE("PARTIDA" VARCHAR, "QUANTITAT_MOVIMENTS" INTEGER) AS $$
 BEGIN
@@ -135,7 +129,6 @@ $$ LANGUAGE 'plpgsql';
 -- -----------------------------------------------------
 -- TANCAR_PARTIDA
 -- -----------------------------------------------------
-DROP FUNCTION IF EXISTS TANCAR_PARTIDA(VARCHAR, INTEGER, VARCHAR);
 CREATE OR REPLACE FUNCTION TANCAR_PARTIDA(VARCHAR, INTEGER, VARCHAR) RETURNS VOID AS $$
 DECLARE
     jutgeDni ALIAS FOR $1;
@@ -160,5 +153,19 @@ BEGIN
     IF resultat = 'T' THEN
         UPDATE "JUTGE" SET "TAULES" = "TAULES" + 1 WHERE "DNI" = partida."JUTGE";
     END IF;
+END;
+$$ LANGUAGE 'plpgsql';
+
+-- -----------------------------------------------------
+-- SIMPLE_ENTRADES_JORNADA
+-- -----------------------------------------------------
+CREATE OR REPLACE FUNCTION SIMPLE_ENTRADES_JORNADA(INTEGER) RETURNS INTEGER AS $$
+DECLARE
+    jornada ALIAS FOR $1;
+    entrades INTEGER;
+BEGIN
+    SELECT SUM(ENTRADES_DISPONIBLES(S."HOTEL", S."NOM", jornada)) INTO entrades FROM "SALA" S;
+    IF entrades IS NULL THEN return '0'; END IF;
+    RETURN entrades;
 END;
 $$ LANGUAGE 'plpgsql';

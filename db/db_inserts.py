@@ -253,10 +253,15 @@ def users_sql():
         print insert_query_1 % ( u[0], u[1] )
 
 def gamedays_sql():
-    insert_query_1 = 'INSERT INTO "JORNADA" ("ID", "DATA_REALITZACIO") VALUES (\'%s\', NULL);'
-    gamedays = [i for i in range(1, 6)]
-    for i, g in enumerate(gamedays):
-        print insert_query_1 % ( g )
+    insert_query_1 = 'INSERT INTO "JORNADA" ("ID", "DATA_REALITZACIO") VALUES (\'%s\', \'%s\');'
+    # gamedays = [i for i in range(1, 6)]
+    gamedays = [('1', '1996-02-10 09:00:00'),
+        ('2', '1996-02-11 09:00:00'),
+        ('3', '1996-02-12 09:00:00'),
+        ('4', '1996-02-13 09:00:00'),
+        ('5', '1996-02-14 09:00:00')]
+    for i, t in gamedays:
+        print insert_query_1 % ( i, t )
 
 def games_sql():
     global players_map

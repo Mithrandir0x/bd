@@ -19,6 +19,11 @@ public class VisitantService
                 String query =  "SELECT p.\"JORNADA\", b.\"NOM\" AS blanques, n.\"NOM\" AS negres, p.\"HOTEL\", p.\"SALA\", p.\"RESULTAT\" FROM \"JUGADOR\" b, \"JUGADOR\" n, \"PARTIDA\" p WHERE b.\"DNI\" = p.\"BLANQUES\" AND n.\"DNI\" = p.\"NEGRES\" ORDER BY p.\"JORNADA\" ASC";
                 
                 Statement s = C.createStatement();
+                
+                System.out.println("\nSales amb entrades disponibles:\n");
+                System.out.println(" JORNADA | BLANQUES                 | NEGRES                   | HOTEL                    | SALA                     | RESULTAT");
+                System.out.println("---------+--------------------------+--------------------------+--------------------------+--------------------------+----------");
+                
                 ResultSet rs = s.executeQuery(query);
                 while ( rs.next() )
                 {
@@ -29,7 +34,7 @@ public class VisitantService
                     String sala = rs.getString(5);
                     String resultat = rs.getString(6);
                     if ( resultat == null ) resultat = "";
-                    System.out.println(String.format("%2d | %32s | %32s | %24s | %24s | %1s", jornada, blanques, negres, hotel, sala, resultat));
+                    System.out.println(String.format(" %7d | %24s | %24s | %24s | %24s | %8s", jornada, blanques, negres, hotel, sala, resultat));
                 }
                 
                 return null;
@@ -49,13 +54,18 @@ public class VisitantService
                 String query =  "SELECT \"NOM\", \"PAIS\", \"PARTIDES_GUANYADES\" FROM \"JUGADOR\" ORDER BY \"PARTIDES_GUANYADES\" DESC";
                 
                 Statement s = C.createStatement();
+                
+                System.out.println("\nClassificacio de jugadors:\n");
+                System.out.println(" NOM DEL JUGADOR          | PAIS             | PARTIDES GUANYADES");
+                System.out.println("--------------------------+------------------+--------------------");
+                
                 ResultSet rs = s.executeQuery(query);
                 while ( rs.next() )
                 {
                     String nom = rs.getString(1);
                     String pais = rs.getString(2);
                     int partidesGuanyades = rs.getInt(3);
-                    System.out.println(String.format("%32s | %16s | %2d", nom, pais, partidesGuanyades));
+                    System.out.println(String.format(" %24s | %16s | %18d", nom, pais, partidesGuanyades));
                 }
                 
                 return null;

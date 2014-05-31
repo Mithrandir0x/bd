@@ -54,6 +54,10 @@ public class TaquillerService extends VisitantService
                 PreparedStatement s = C.prepareStatement(query);
                 s.setInt(1, jornada);
                 
+                System.out.println("\nSales amb entrades disponibles:\n");
+                System.out.println(" ID | HOTEL                    | SALA                     | ENTRADES DISPONIBLES");
+                System.out.println("----+--------------------------+--------------------------+----------------------");
+                
                 ResultSet rs = s.executeQuery();
                 while ( rs.next() )
                 {
@@ -62,9 +66,46 @@ public class TaquillerService extends VisitantService
                     int entradesDisponibles = rs.getInt(3);
                     if ( entradesDisponibles > 0 )
                     {
-                        System.out.println(String.format("[%2d] %24s | %24s | %3d", i, hotel, sala, entradesDisponibles));
+                        System.out.println(String.format(" %2d | %24s | %24s | %20d", i, hotel, sala, entradesDisponibles));
                         l.add(new Sala(sala, hotel));
                         i++;
+                    }
+                }
+                
+                return l;
+            }
+            
+        }.execute();
+    }
+    
+    public List<Integer> consultarJornadesDisponibles()
+    {
+        return new PostgreTransaction<List<Integer>>(){
+
+            @Override
+            public List<Integer> run() throws Exception
+            {
+                List<Integer> l = new ArrayList<Integer>();
+                // SELECT "ID", "DATA_REALITZACIO", ENTRADES_JORNADA("ID") FROM "JORNADA"
+                String query = "SELECT \"ID\", \"DATA_REALITZACIO\", SIMPLE_ENTRADES_JORNADA(\"ID\") AS EJ FROM \"JORNADA\"";
+                
+                PreparedStatement s = C.prepareStatement(query);
+                ResultSet rs = s.executeQuery();
+                
+                System.out.println("\nJornades amb sales disponibles per vendre entrades:\n");
+                System.out.println(" ID | DATA REALITZACIO | ENTRADES DISPONIBLES");
+                System.out.println("----+------------------+----------------------");
+                
+                while ( rs.next() )
+                {
+                    int id = rs.getInt(1);
+                    Date data_realitzacio = rs.getDate(2);
+                    int entrades = rs.getInt(3);
+                    
+                    if ( entrades > 0 )
+                    {
+                        System.out.println(String.format(" %2d | %16s | %20d", id, data_realitzacio, entrades));
+                        l.add(id);
                     }
                 }
                 
@@ -81,20 +122,23 @@ public class TaquillerService extends VisitantService
             @Override
             public List<Integer> run() throws Exception
             {
-                int i = 0;
                 List<Integer> l = new ArrayList<Integer>();
                 String query = "SELECT \"ID\", \"DATA_REALITZACIO\" FROM \"JORNADA\"";
                 
                 PreparedStatement s = C.prepareStatement(query);
+                
+                System.out.println("\nJornades existents:\n");
+                System.out.println(" ID | DATA REALITZACIO");
+                System.out.println("----+------------------");
+                
                 ResultSet rs = s.executeQuery();
                 while ( rs.next() )
                 {
                     int id = rs.getInt(1);
                     Date data_realitzacio = rs.getDate(2);
                     
-                    System.out.println(String.format("[%2d] %32s", id, data_realitzacio));
+                    System.out.println(String.format(" %2d | %16s", id, data_realitzacio));
                     l.add(id);
-                    i++;
                 }
                 
                 return l;

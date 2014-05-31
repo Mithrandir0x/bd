@@ -53,6 +53,15 @@ public class JutgeService
                 String query = "SELECT \"ID\", b.\"NOM\" AS BLANQUES, n.\"NOM\" AS NEGRES, \"JORNADA\", \"RESULTAT\" FROM \"JUGADOR\" b, \"JUGADOR\" n, \"PARTIDA\" WHERE b.\"DNI\" = \"BLANQUES\" AND n.\"DNI\" = \"NEGRES\" AND \"JUTGE\" = ? ORDER BY \"JORNADA\" ASC";
                 
                 PreparedStatement s = C.prepareStatement(query);
+                
+                if ( mostrarNomesNules )
+                    System.out.println("\nPartides per tancar:\n");
+                else
+                    System.out.println("\nTotes les partides arbitrades:\n");
+                
+                System.out.println(" ID | JORNADA | RESULTAT | BLANQUES                 | NEGRES");
+                System.out.println("----+---------+----------+--------------------------+--------------------------");
+                
                 s.setString(1, jutgeDni);
                 
                 ResultSet rs = s.executeQuery();
@@ -68,11 +77,11 @@ public class JutgeService
                     if ( mostrarNomesNules )
                     {
                         if ( resultat.length() == 0 )
-                            System.out.println(String.format("[%2d] %2d | %1s | %32s | %32s", id, jornada, resultat, blanques, negres));
+                            System.out.println(String.format(" %2d | %7d | %8s | %24s | %24s", id, jornada, resultat, blanques, negres));
                     }
                     else
                     {
-                        System.out.println(String.format("[%2d] %2d | %1s | %32s | %32s", id, jornada, resultat, blanques, negres));
+                        System.out.println(String.format(" %2d | %7d | %8s | %24s | %24s", id, jornada, resultat, blanques, negres));
                     }
                     
                     if ( resultat.length() == 0 ) l.add(id);
