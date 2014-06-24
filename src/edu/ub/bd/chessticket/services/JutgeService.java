@@ -6,9 +6,18 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Consultes utilitzades per JutgeMenu i OrganitzadorMenu.
+ * 
+ */
 public class JutgeService
 {
     
+    /**
+     * Mostra per pantalla els jutges disponibles a la base de dades.
+     * 
+     * @return Llista de cadenes de caracters dels DNIs dels jutges.
+     */
     public List<String> consultarTotsJutges()
     {
         return new PostgreTransaction<List<String>>(){
@@ -23,6 +32,7 @@ public class JutgeService
                 
                 PreparedStatement s = C.prepareStatement(query);
                 ResultSet rs = s.executeQuery();
+                System.out.println("\nLlistat dels jutges que poden arbitrar partides:\n");
                 while ( rs.next() )
                 {
                     String dni = rs.getString(1);
@@ -41,7 +51,15 @@ public class JutgeService
         }.execute();
     }
     
-    public List<Integer> consultarPartides(final String jutgeDni, final boolean mostrarNomesNules)
+    /**
+     * Mostra per pantalla la llista de partides, amb resultat i nom del jugadors, arbitrades
+     * pel jutge amb DNI pasat per parametre.
+     * 
+     * @param jutgeDni DNI del jutge del que s'ha de llistar les partides.
+     * @param mostrarNomesSenseResultat Boolea per indicar si mostrar nomes aquelles partides sense resultat.
+     * @return Llista d'identificadors numerics de les partides mostrades per pantalla.
+     */
+    public List<Integer> consultarPartides(final String jutgeDni, final boolean mostrarNomesSenseResultat)
     {
         return new PostgreTransaction<List<Integer>>(){
 
@@ -54,7 +72,7 @@ public class JutgeService
                 
                 PreparedStatement s = C.prepareStatement(query);
                 
-                if ( mostrarNomesNules )
+                if ( mostrarNomesSenseResultat )
                     System.out.println("\nPartides per tancar:\n");
                 else
                     System.out.println("\nTotes les partides arbitrades:\n");
@@ -74,7 +92,7 @@ public class JutgeService
                     String resultat = rs.getString(5);
                     if ( resultat == null ) resultat = "";
                     
-                    if ( mostrarNomesNules )
+                    if ( mostrarNomesSenseResultat )
                     {
                         if ( resultat.length() == 0 )
                             System.out.println(String.format(" %2d | %7d | %8s | %24s | %24s", id, jornada, resultat, blanques, negres));
@@ -93,11 +111,26 @@ public class JutgeService
         }.execute();
     }
     
+    /**
+     * Mostra per pantalla la llista de partides, amb resultat i nom del jugadors, arbitrades
+     * pel jutge amb DNI pasat per parametre, que SI que tenen inputat el resultat.
+     * 
+     * @param jutgeDni DNI del jutge del que s'ha de llistar les partides.
+     * @return Llista d'identificadors numerics de les partides mostrades per pantalla.
+     */
     public List<Integer> consultarPartides(final String jutgeDni)
     {
         return consultarPartides(jutgeDni, false);
     }
 
+    /**
+     * Tanca la partida arbitrada pel jutge amb un resultat pasat per parametre.
+     * 
+     * @param jutgeDni DNI del jutge que arbitra la partida.
+     * @param partida Identificador numeric de la partida.
+     * @param resultat Resultat de la partida. 
+     * @return Boolea indicant si la transaccio ha funcionat correctament.
+     */
     public boolean tancarPartida(final String jutgeDni, final int partida, final String resultat)
     {
         return new PostgreTransaction<Boolean>(){
@@ -119,6 +152,14 @@ public class JutgeService
         }.execute();
     }
     
+    /**
+     * Donada una llista de moviments, s'afegeixen a la base de dades per
+     * la partida pasada per parametre.
+     * 
+     * @param partidaId Identificador numeric de la partida.
+     * @param moviments Llista de cadenes de caracter amb cadascun dels moviments de la partida.
+     * @return Boolea indicant si la transaccio ha anat be o no.
+     */
     public boolean omplirMoviments(final int partidaId, final List<String> moviments)
     {
         return new PostgreTransaction<Boolean>(){

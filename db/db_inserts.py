@@ -75,11 +75,13 @@ def organizers_sql():
     insert_query_1 = ( ''
             'INSERT INTO "USUARI" ('
                 '"DNI", '
+                '"CONTRASENYA", '
                 '"ROL", '
                 '"NOM", '
                 '"GENERE", '
                 '"PAIS"'
             ') VALUES ('
+                "'%s',"
                 "'%s',"
                 "'ORGANITZADOR',"
                 "'%s',"
@@ -87,13 +89,14 @@ def organizers_sql():
                 "'%s'"
             ');'
         )
-    print insert_query_1 % ( '42516878R', 'Salvador Puig', 'Sr.', 'Espanya' )
+    print insert_query_1 % ( '42516878R', 'NGLrByu6wcbHzkNI', 'Salvador Puig', 'Sr.', 'Espanya' )
     users.append(('42516878R', 'ORGANITZADOR'))
 
 def vendors_sql():
     insert_query_1 = ( ''
             'INSERT INTO "TAQUILLER" ('
                 '"DNI", '
+                '"CONTRASENYA", '
                 '"ROL", '
                 '"NOM", '
                 '"TELEFON", '
@@ -101,6 +104,7 @@ def vendors_sql():
                 '"PAIS", '
                 '"ENTRADES_VENUDES"'
             ') VALUES ('
+                "'%s',"
                 "'%s',"
                 "'TAQUILLER',"
                 "'%s',"
@@ -111,17 +115,18 @@ def vendors_sql():
             ');'
         )
 
-    vendors = ( "Maria,32013847R,Sra.,683372388",
-        "Pere,38227338T,Sr.,633728377",
-        "Gertrudis,43382738F,Sra.,602833740" )
+    vendors = ( "Maria,32013847R,ReNQuSz+6IsJuxjd,Sra.,683372388",
+        "Pere,38227338T,5peVLAjGD5cKuYzb,Sr.,633728377",
+        "Gertrudis,43382738F,cx1NDPDt49FvOPyG,Sra.,602833740" )
 
     for i, v in enumerate(vendors, 100):
         data = v.split(',')
         name = data[0]
         dni = data[1]
-        gender = data[2]
-        ph = data[3]
-        print insert_query_1 % ( dni, name, ph, gender, 'Espanya', 0 )
+        passwordhash = data[2]
+        gender = data[3]
+        ph = data[4]
+        print insert_query_1 % ( dni, passwordhash, name, ph, gender, 'Espanya', 0 )
         users.append((dni, 'TAQUILLER'))
 
 def referees_sql():
@@ -130,6 +135,7 @@ def referees_sql():
     insert_query_1 = ( ''
             'INSERT INTO "JUTGE" ('
                 '"DNI", '
+                '"CONTRASENYA", '
                 '"ROL", '
                 '"NOM", '
                 '"TELEFON", '
@@ -140,6 +146,7 @@ def referees_sql():
                 '"VICTORIES_BLANQUES", '
                 '"VICTORIES_NEGRES"'
             ') VALUES ('
+                "'%s',"
                 "'%s',"
                 "'JUTGE',"
                 "'%s',"
@@ -153,19 +160,20 @@ def referees_sql():
             ');'
         )
     
-    referees = ( "Benjumea Azlatiletamendi,20100393R,Sr.,França,Hotel Capri",
-        "Illiech Vladimir,20200288L,Sra.,Estats Units,Hotel Capri",
-        "Pérez Lucián,20300643G,Sr.,Rússia,Hotel Capri",
-        "Roberto Mandini,20400453H,Sr.,Itàlia,Hotel Capri" )
+    referees = ( "Benjumea Azlatiletamendi,20100393R,7rZdIO2GnayzQf0o,Sr.,França,Hotel Capri",
+        "Illiech Vladimir,20200288L,sDlHbxGBUpR+Zmfq,Sra.,Estats Units,Hotel Capri",
+        "Pérez Lucián,20300643G,h1KrYzZxglRDJaqK,Sr.,Rússia,Hotel Capri",
+        "Roberto Mandini,20400453H,wf+EVZAO6AKTJjju,Sr.,Itàlia,Hotel Capri" )
 
     for i, v in enumerate(referees, 500):
         data = v.split(',')
         name = data[0]
         dni = data[1]
-        gender = data[2]
-        country = data[3]
-        hotel = data[4]
-        print insert_query_1 % ( dni, name, gender, hotel, country, 0, 0, 0 )
+        passwordhash = data[2]
+        gender = data[3]
+        country = data[4]
+        hotel = data[5]
+        print insert_query_1 % ( dni, passwordhash, name, gender, hotel, country, 0, 0, 0 )
 
         referees_map[name] = dni
         users.append((dni, 'JUTGE'))

@@ -3,11 +3,19 @@ package edu.ub.bd.chessticket.services;
 import edu.ub.bd.utils.PostgreTransaction;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.text.MessageFormat;
 
+/**
+ * Consultes fetes per VisitantMenu i TaquillerMenu.
+ * 
+ */
 public class VisitantService
 {
     
+    /**
+     * Mostra per pantalla la llista de partides fetes fins al moment.
+     * 
+     * @throws Exception 
+     */
     public void consultarJornada() throws Exception
     {
         new PostgreTransaction<Object>(){
@@ -43,6 +51,11 @@ public class VisitantService
         }.execute();
     }
 
+    /**
+     * Mostra la classificacio actual del campionat.
+     * 
+     * @throws Exception 
+     */
     public void consultarClassificacio() throws Exception
     {
         new PostgreTransaction<Object>(){

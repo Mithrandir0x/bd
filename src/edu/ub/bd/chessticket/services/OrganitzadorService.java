@@ -9,9 +9,24 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+/**
+ * Recopila les consultes fetes per OrganitzadorMenu.
+ * 
+ */
 public class OrganitzadorService
 {
     
+    /**
+     * Donat els identificadors dels jugadors, el jutge, la jornada i una sala, crea la partida
+     * amb tots aquests elements.
+     * 
+     * @param blanques DNI del jugador de les blanques.
+     * @param negres DNI del jugador de les negres.
+     * @param jutge DNI del jutge.
+     * @param jornada Identificador de la jornada.
+     * @param sala Sala on s'organitza el torneig
+     * @return Retorna el identificador de la nova partida, o null si no s'ha pogut crear.
+     */
     public Integer crearPartida(final String blanques, final String negres, final String jutge, final int jornada, final Sala sala)
     {
         return new PostgreTransaction<Integer>(){
@@ -43,6 +58,11 @@ public class OrganitzadorService
         }.execute();
     }
     
+    /**
+     * Crea la jornada amb l'identificador passar per parametre.
+     * 
+     * @param id Identificador nou de la partida.
+     */
     public void crearJornada(final int id)
     {
         new PostgreTransaction<Integer>(){
@@ -62,6 +82,11 @@ public class OrganitzadorService
         }.execute();
     }
     
+    /**
+     * Retorna una llista dels DNIs dels jugadors disponibles a la base de dades.
+     * 
+     * @return Llista de cadenes de caracters dels DNIs
+     */
     public List<String> consultarTotsJugadors()
     {
         return new PostgreTransaction<List<String>>(){
@@ -76,6 +101,7 @@ public class OrganitzadorService
                 
                 PreparedStatement s = C.prepareStatement(query);
                 ResultSet rs = s.executeQuery();
+                System.out.println("\nLlistat dels jugadors participants:\n");
                 while ( rs.next() )
                 {
                     String dni = rs.getString(1);
@@ -94,6 +120,11 @@ public class OrganitzadorService
         }.execute();
     }
     
+    /**
+     * Retorna les sales d'hotels disponibles a la base de dades.
+     * 
+     * @return Llista de sales d'hotels.
+     */
     public List<Sala> consultarTotesSales()
     {
         return new PostgreTransaction<List<Sala>>(){
@@ -107,6 +138,7 @@ public class OrganitzadorService
                 
                 PreparedStatement s = C.prepareStatement(query);
                 ResultSet rs = s.executeQuery();
+                System.out.println("\nSales d'hotels disponibles:\n");
                 while ( rs.next() )
                 {
                     String hotel = rs.getString(1);

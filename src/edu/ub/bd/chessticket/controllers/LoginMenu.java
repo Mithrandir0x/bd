@@ -3,6 +3,11 @@ package edu.ub.bd.chessticket.controllers;
 import edu.ub.bd.chessticket.models.Usuari;
 import edu.ub.bd.chessticket.services.LoginService;
 
+/**
+ * Aquest menu s'encarrega de fer la validacio pertinent contra
+ * la base de dades per autenticar un usuari i iniciar la seva sessio.
+ * 
+ */
 public class LoginMenu extends Menu
 {
     
@@ -34,9 +39,10 @@ public class LoginMenu extends Menu
             
             mostrarOpcions();
             
-            String dni = c.readLine("Introdueixi el DNI: ");
+            String dni = readline("Introdueixi el DNI: ").trim();
+            String password = readline("Introdueixi la contrasenya: ").trim();
             
-            menu = ferLogin(dni);
+            menu = ferLogin(dni, password);
             
             if ( menu != null )
             {
@@ -56,9 +62,18 @@ public class LoginMenu extends Menu
         System.out.println("******************************\n         LOGIN\n******************************\n");
     }
     
-    private Menu ferLogin(String dni) throws Exception
+    /**
+     * En funcio dels credencials donats per parametre, retorna el menu al que ha de donar pas
+     * per executar les funcions adients d'aquell usuari.
+     * 
+     * @param dni El DNI de la persona amb la que s'intenta iniciar sessio.
+     * @param password La contrassenya d'aquesta persona.
+     * @return L'objecte menu al qual es dona pas si s'ha validad correctament. Si no es aixi, retorna null.
+     * @throws Exception 
+     */
+    private Menu ferLogin(String dni, String password) throws Exception
     {
-        usuari = loginService.verificarUsuari(dni);
+        usuari = loginService.verificarUsuari(dni, password);
         
         if ( usuari != null )
         {

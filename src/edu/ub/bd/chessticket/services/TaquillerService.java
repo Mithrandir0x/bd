@@ -8,9 +8,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Consultes emprades per TaquillerMenu.
+ * 
+ */
 public class TaquillerService extends VisitantService
 {
     
+    /**
+     * Persisteix a la base de dades la venta d'una entrada feta per un
+     * taquiller per la sala i jornada pasades per parametre.
+     * 
+     * @param sala Sala on es fa la partida.
+     * @param jornada Jornada durant la qual es fa la partida.
+     * @param taquillerDni DNI del taquiller que ha fet la venta.
+     * @return Retorna un boolea indicant si s'ha fet o no la venta.
+     */
     public boolean vendreEntrada(final Sala sala, final int jornada, final String taquillerDni)
     {
         return new PostgreTransaction<Boolean>(){
@@ -40,6 +53,12 @@ public class TaquillerService extends VisitantService
         }.execute();
     }
     
+    /**
+     * Mostra per pantalla les sales d'hotels disponibles per la jornada pasada per parametre.
+     * 
+     * @param jornada Identificador de la jornada.
+     * @return Llista de sales d'hotels.
+     */
     public List<Sala> consultarSalesDisponibles(final int jornada)
     {
         return new PostgreTransaction<List<Sala>>(){
@@ -78,6 +97,11 @@ public class TaquillerService extends VisitantService
         }.execute();
     }
     
+    /**
+     * Mostra per pantalla les jornades disponibles per les que es pot vendre entrades.
+     * 
+     * @return Llista d'identificadors numerics de les jornades.
+     */
     public List<Integer> consultarJornadesDisponibles()
     {
         return new PostgreTransaction<List<Integer>>(){
@@ -115,6 +139,11 @@ public class TaquillerService extends VisitantService
         }.execute();
     }
     
+    /**
+     * Mostra per pantalla les jornades existents a la base de dades.
+     * 
+     * @return Llista d'identificadors numerics de les jornades.
+     */
     public List<Integer> consultarTotesJornades()
     {
         return new PostgreTransaction<List<Integer>>(){

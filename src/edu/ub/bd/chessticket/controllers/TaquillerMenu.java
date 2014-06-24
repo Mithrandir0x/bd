@@ -5,6 +5,13 @@ import edu.ub.bd.chessticket.services.TaquillerService;
 import edu.ub.bd.chessticket.services.VisitantService;
 import java.util.List;
 
+/**
+ * Aquest menu presenta les funcionalitats disponibles pels taquillers.
+ * 
+ * Te acces a les funcionalitats d'un usuari no enregistrat, a mes de poder
+ * vendre entrades.
+ * 
+ */
 public class TaquillerMenu extends Menu
 {
 
@@ -19,11 +26,9 @@ public class TaquillerMenu extends Menu
         while ( !goBack )
         {
             mostrarOpcions();
+                        
+            int choice = readint("\nOPCIO: ");
             
-            System.out.print("\nOPCIO: ");
-            waitNextInt();
-            
-            int choice=sc.nextInt();
             switch (choice)
             {
                 case 1:
@@ -57,13 +62,16 @@ public class TaquillerMenu extends Menu
             + "\n5-Sortir");
     }
     
+    /**
+     * S'encarrega de demanar la informacio necessaria al taquiller per poder
+     * fer la venta d'una entrada.
+     * 
+     */
     private void vendreEntrada()
     {
         List<Integer> jornades = taquillerService.consultarJornadesDisponibles();
         
-        System.out.print("Introdueixi el identificador de la jornada: ");
-        waitNextInt();
-        int jornada = sc.nextInt();
+        int jornada = readint("Introdueixi el identificador de la jornada: ");
         
         if ( !jornades.contains(jornada) )
         {
@@ -75,9 +83,7 @@ public class TaquillerMenu extends Menu
         
         if ( salesDisponibles.size() > 0 )
         {
-            System.out.print("\nIntrodueixi la sala: ");
-            waitNextInt();
-            int salaId = sc.nextInt();
+            int salaId = readint("\nIntrodueixi el identificador de la sala per la que vol vendre l'entrada: ");
             if ( salaId >= 0 && salaId < salesDisponibles.size() )
             {
                 Sala sala = salesDisponibles.get(salaId);

@@ -2,6 +2,15 @@ package edu.ub.bd.chessticket.controllers;
 
 import edu.ub.bd.chessticket.services.VisitantService;
 
+/**
+ * El menu que veu qualsevol persona que no hagi iniciat sessio.
+ * 
+ * Pot consultar l'estat de les jornades, i la classificacio.
+ * 
+ * A mes, permet iniciar una sessio per accedir a altres funcionalitats
+ * mes avançades.
+ * 
+ */
 public class VisitantMenu extends Menu
 {
     
@@ -15,10 +24,8 @@ public class VisitantMenu extends Menu
         {
             mostrarOpcions();
             
-            System.out.print("\nOPCIO: ");
-            waitNextInt();
+            int choice = readint("\nOPCIO: ");
             
-            int choice=sc.nextInt();
             switch (choice)
             {
                 case 1:
@@ -42,7 +49,7 @@ public class VisitantMenu extends Menu
     public void mostrarOpcions() throws Exception
     {
         System.out.println("******************************\n           CHESS TICKET\n******************************\n"
-                + "\n1-Log In"
+                + "\n1-Iniciar sessio"
                 + "\n2-Consultar Jornada"
                 + "\n3-Consultar Classificacio"
                 + "\n4-Sortir");

@@ -9,3 +9,6 @@ dist
 *.ear
 
 *.pyc
+
+vagrant/.vagrant/*
+vagrant/*
